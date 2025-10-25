@@ -19,7 +19,7 @@ public class JdbcUserDetailsManagerSecurityConfig {
         http.csrf(csrf->csrf.disable());
         http.authorizeHttpRequests((requests) -> requests
                 .requestMatchers("/myAccount", "/myBalance", "/myLoans", "/myCards").authenticated()
-                .requestMatchers("/notices", "/contact", "/error").permitAll());
+                .requestMatchers("/notices", "/contact", "/error","/registerUser").permitAll());
 
         /* Disable form login, if disabled we can use only API's via API's
            http.formLogin(httpSecurityFormLoginConfigurer -> {
