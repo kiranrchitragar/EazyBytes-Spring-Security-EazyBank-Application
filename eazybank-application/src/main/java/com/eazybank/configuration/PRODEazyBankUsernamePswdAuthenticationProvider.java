@@ -1,5 +1,6 @@
 package com.eazybank.configuration;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,12 +12,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class EazyBankUsernamePswdAuthenticationProvider implements AuthenticationProvider {
+@Profile("prod")
+public class PRODEazyBankUsernamePswdAuthenticationProvider implements AuthenticationProvider {
 
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
 
-    public EazyBankUsernamePswdAuthenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+    public PRODEazyBankUsernamePswdAuthenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -28,8 +30,8 @@ public class EazyBankUsernamePswdAuthenticationProvider implements Authenticatio
         String pswd = authentication.getCredentials().toString();
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+        // Validate pswd as it is prod environemt
         if(passwordEncoder.matches(pswd,userDetails.getPassword())){
-
             // We can write additional validations like
             //    1. Check if age is < 18
             //    2. Check if the user is from specific country

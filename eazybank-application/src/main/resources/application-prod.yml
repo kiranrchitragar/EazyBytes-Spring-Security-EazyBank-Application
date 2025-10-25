@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: eazybank-application
+
+  datasource:
+    url: jdbc:mysql://localhost:3307/eazybank?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: eazybytes
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none  # we already created tables manually
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+logging:
+  pattern:
+    console: "%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) -%msg%n"
+  level:
+    org.springframework.security: ERROR
