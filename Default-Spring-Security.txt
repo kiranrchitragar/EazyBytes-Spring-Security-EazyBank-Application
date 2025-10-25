@@ -1,3 +1,6 @@
-* This is basic Authentication with SPring Default Configuration. 
+
+* This is basic Authentication with Spring Default Configuration.
+* Initially we just added the spring security dependency and Spring generated the default password for us.
+* To override this we added userDetails like username and pswd in application.yml.
+* Next we started InMemory UserDetails,configured in SecurityConfig.java
 * Changes are in SecurityConfig.java class. 
-* UserName and Password are configured in application.yml file.
