@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0.36
+    container_name: mysql_container
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: eazybank
+      MYSQL_USER: eazybytes
+      MYSQL_PASSWORD: root
+#    command: >
+#      --default-authentication-plugin=caching_sha2_password
+#      --character-set-server=utf8mb4
+#      --collation-server=utf8mb4_unicode_ci
+#      --sql-mode=STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION
+    volumes:
+      - mysql_data:/var/lib/mysql
+      #- ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3307:3306"
+    networks:
+      - eazybank_network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin_container
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - "8484:80"
+    networks:
+      - eazybank_network
+
+networks:
+  eazybank_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
