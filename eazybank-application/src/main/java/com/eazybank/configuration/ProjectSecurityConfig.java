@@ -18,6 +18,10 @@ public class ProjectSecurityConfig {
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll());*/
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
+        http.sessionManagement(smc->smc.invalidSessionUrl("/invalidSession")// Once time out redirect to this page
+                .maximumSessions(1)  // Maximum Sessions a user can have. This will invalidate the previous session and new session is cretaed. To avoid this we use below
+                .maxSessionsPreventsLogin(true)); // This wont allow for second session to be created till the 1st session is timedout or expired.
+        http.requiresChannel(rcc->rcc.anyRequest().requiresInsecure()); // Allows only http calls
         http.csrf(csrf->csrf.disable());
         http.authorizeHttpRequests((requests) -> requests
                 .requestMatchers("/myAccount", "/myBalance", "/myLoans", "/myCards").authenticated()

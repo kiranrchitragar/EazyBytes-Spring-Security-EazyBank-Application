@@ -18,10 +18,15 @@ public class Prod_ProjectSecurityConfig {
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll());*/
         /*http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());*/
+        http.sessionManagement(smc->smc.invalidSessionUrl("/invalidSession")// Once time out redirect to this page
+                .maximumSessions(1)  // Maximum Sessions a user can have. This will invalidate the previous session and new session is cretaed. To avoid this we use below
+                .maxSessionsPreventsLogin(true)); // This wont allow for second session to be created till the 1st session is timedout or expired.
+
+        http.requiresChannel(rcc->rcc.anyRequest().requiresSecure()); // Allows only https calls - redirects to 8443[default port of https]
         http.csrf(csrf->csrf.disable());
         http.authorizeHttpRequests((requests) -> requests
                 .requestMatchers("/myAccount", "/myBalance", "/myLoans", "/myCards").authenticated()
-                .requestMatchers("/notices", "/contact", "/error","/registerUser").permitAll());
+                .requestMatchers("/notices", "/contact", "/error","/registerUser","/login/**","/invalidSession").permitAll());
 
         /* Disable form login, if disabled we can use only API's via API's
            http.formLogin(httpSecurityFormLoginConfigurer -> {
@@ -34,6 +39,17 @@ public class Prod_ProjectSecurityConfig {
            httpSecurityHttpBasicConfigurer.disable();
         });
          */
+
+        http.formLogin(flc->flc.loginPage("/login") // our customized login page,if this is not mentioned, it will display login page from spring security login page-> post
+                .defaultSuccessUrl("/dashboard") // once logged in its always redirected to Default
+                .failureUrl("/login?error=true")); // Once Authentication is failed, we will redirect to error page
+
+
+        http.logout(logot->logot.logoutSuccessUrl("/loginn?logout=true")  //Default loggut URL
+                .invalidateHttpSession(true) // Invalidate the https session once logged out.
+                .clearAuthentication(true) // ANy Authentication object in Security context is cleared.
+                .deleteCookies("JSESSIONID")); // Delete cookie once logged out
+
         http.formLogin(withDefaults());
         http.httpBasic(withDefaults());
         return http.build();

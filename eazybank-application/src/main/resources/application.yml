@@ -2,4 +2,4 @@ spring:
   application:
     name: eazybank-application
   profiles:
-    active: prod
+    active: dev
