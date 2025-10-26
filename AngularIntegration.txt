@@ -1,0 +1,62 @@
+----------- Cors Error --------------
+
+Cors - Cross Origin Resource Sharing
+	Cors is a protocol that enables script running on a browser client to interact with resources from a different origin.
+	If UI app is making call to API in BAckend it would be blocked due to CORS.
+
+Access to XMLHttpRequest at 'http://localhost:8080/notices' from origin 'http://localhost:4200' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+
+4200 is UI and 8080 is Backend.
+
+
+Steps to resolve this 
+1. At Controller class level we can Annotate it with 	
+		@CrossOrigin(origins="http://localhost:4200")
+		@CrossOrigin(origins="*")
+	
+2. In ProjectSecurityConfig.java we make changes as below
+
+
+
+
+-- How will the browser know if cors is handled in Backend?
+	- Before we actuall make a call to 8080, the browser makes a preflight request to 8080, to look for cors configuration in backend side.
+	
+	
+------------------------ CSRF --------------------------
+
+CSRF - Cross site request Forgery
+	
+1. http.csrf(csrf->csrf.disable()); -> Disable completely , not recommended.
+
+2. Changes are in ProjectSecurityConfig.java
+
+	http.cors(corsCustomizer->corsCustomizer.configurationSource(new CorsConfigurationSource() {
+            @Override
+            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                CorsConfiguration config = new CorsConfiguration();
+                config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+                config.setAllowedMethods(Collections.singletonList("*"));
+                config.setAllowCredentials(true);
+                config.setAllowedHeaders(Collections.singletonList("*"));
+                config.setMaxAge(3600L);
+                return config;
+            }
+        }));
+		
+3. Solution to  CSRF attack is using CSRF Token. 
+	This CSRF token is appended in cookie. -  More details in "CSRF-Solution.png" image in project.
+	
+	-  // A CsrfTokrnRepository persists the CSRF token in a cookie named "XSRF-TOKEN" and reads from header "X-XSRF-TOKEN".
+        http.csrf(csrfConfig->csrfConfig.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
+        http.addFilterAfter(new CSRFCookieFilter(), BasicAuthenticationFilter.class);
+		
+	- public class CSRFCookieFilter extends OncePerRequestFilter {
+		@Override
+		protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+			CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+			// Render the token value to a cookie by causing the deferred token to be loaded.
+			csrfToken.getToken();
+			filterChain.doFilter(request,response);
+		}
+	}

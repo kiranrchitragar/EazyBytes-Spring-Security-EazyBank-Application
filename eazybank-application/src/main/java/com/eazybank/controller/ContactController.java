@@ -1,15 +1,31 @@
 package com.eazybank.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.eazybank.entities.Contact;
+import com.eazybank.repository.ContactRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Date;
+import java.util.Random;
+
 @RestController
+@RequiredArgsConstructor
 public class ContactController {
 
-    @GetMapping("/contact")
-      public String saveContactInquireyDetails(){
+    private final ContactRepository contactRepository;
 
-        return "Hello, Welcome to easy bank";
-     }
+    @PostMapping("/contact")
+    public Contact saveContactInquiryDetails(@RequestBody Contact contact) {
+        contact.setContactId(getServiceReqNumber());
+        contact.setCreateDt(new Date(System.currentTimeMillis()));
+        return contactRepository.save(contact);
+    }
+
+    public String getServiceReqNumber() {
+        Random random = new Random();
+        int ranNum = random.nextInt(999999999 - 9999) + 9999;
+        return "SR" + ranNum;
+    }
 }

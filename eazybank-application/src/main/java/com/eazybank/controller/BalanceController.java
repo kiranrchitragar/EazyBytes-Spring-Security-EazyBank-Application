@@ -1,15 +1,28 @@
 package com.eazybank.controller;
 
+import com.eazybank.entities.AccountTransactions;
+import com.eazybank.repository.AccountTransactionsRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
+@RequiredArgsConstructor
 public class BalanceController {
 
-    @GetMapping("/myBalance")
-      public String getBalanceDetails(){
+    private final AccountTransactionsRepository accountTransactionsRepository;
 
-        return "Hello, Balance";
-     }
+    @GetMapping("/myBalance")
+    public List<AccountTransactions> getBalanceDetails(@RequestParam long id) {
+        List<AccountTransactions> accountTransactions = accountTransactionsRepository.
+                findByCustomerIdOrderByTransactionDtDesc(id);
+        if (accountTransactions != null) {
+            return accountTransactions;
+        } else {
+            return null;
+        }
+    }
 }
