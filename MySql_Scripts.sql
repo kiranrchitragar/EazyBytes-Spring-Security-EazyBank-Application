@@ -32,11 +32,15 @@ VALUES
 
 
 
-
 CREATE TABLE `customer` (
     `id` int NOT NULL AUTO_INCREMENT,
     `email` VARCHAR(50) NOT NULL,
-    `pwd` VARCHAR(50) NOT NULL,
+    `pwd` VARCHAR(500) NOT NULL,
     `role` VARCHAR(100) NOT NULL,
     PRIMARY KEY (`id`)
 );
+
+INSERT INTO `customer` (`email`, `pwd`, `role`) 
+VALUES 
+  ('happy@gmail.com', '{noop}Blue!Tiger@47Sun', 'read'),
+  ('admin@gmail.com', '{bcrypt}$2a$12$kDn2lQ/lobS3.Ucwlv6CBeIfDAskRXWSBBv6JIO1pQYTekeI6dBJe', 'admin');
