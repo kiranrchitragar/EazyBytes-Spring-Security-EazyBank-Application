@@ -1,5 +1,6 @@
 package com.eazybank.configuration;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,27 +13,18 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Profile("!prod")
-public class NonProdEazyBankUsernamePswdAuthenticationProvider implements AuthenticationProvider {
+@RequiredArgsConstructor
+public class EazyBankUsernamePwdAuthenticationProvider implements AuthenticationProvider {
 
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
 
-    public NonProdEazyBankUsernamePswdAuthenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
-        this.userDetailsService = userDetailsService;
-        this.passwordEncoder = passwordEncoder;
-    }
-
-
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String userName = authentication.getName();
-        String pswd = authentication.getCredentials().toString();
-
-        UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
-
-        // No password checks as its lower environment
-        return new UsernamePasswordAuthenticationToken(userName,pswd,userDetails.getAuthorities());
-
+        String username = authentication.getName();
+        String pwd = authentication.getCredentials().toString();
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        return new UsernamePasswordAuthenticationToken(username,pwd,userDetails.getAuthorities());
     }
 
     @Override

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.sql.Date;
+import java.util.Set;
 
 @Entity
 @Data
@@ -31,5 +32,10 @@ public class Customer {
     @Column(name = "create_dt")
     @JsonIgnore
     private Date createDt;
+
+    // 1 customer -> Many authority
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
+    @JsonIgnore
+    private Set<Authority> authorities;
 
 }
