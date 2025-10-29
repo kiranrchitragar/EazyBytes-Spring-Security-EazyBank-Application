@@ -14,8 +14,4 @@ public class Authority {
 
     private String name;
 
-    // Multiple authority -> single customer
-    @ManyToOne
-    @JoinColumn(name="customer_id")
-    private Customer customer;
 }

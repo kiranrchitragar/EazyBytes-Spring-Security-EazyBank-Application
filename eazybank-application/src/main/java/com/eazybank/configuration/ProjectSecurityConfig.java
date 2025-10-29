@@ -51,14 +51,10 @@ public class ProjectSecurityConfig {
                 .addFilterAfter(new CSRFCookieFilter(), BasicAuthenticationFilter.class)
                 .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure()) // Only HTTP
                 .authorizeHttpRequests((requests) -> requests
-                       .requestMatchers("/myAccount").hasAuthority("VIEWACCOUNT")
-                        .requestMatchers("/myBalance").hasAnyAuthority("VIEWBALANCE", "VIEWACCOUNT")
-                        .requestMatchers("/myLoans").hasAuthority("VIEWLOANS")
-                        .requestMatchers("/myCards").hasAuthority("VIEWCARDS")
-                        /*.requestMatchers("/myAccount").hasRole("USER")
-                       .requestMatchers("/myBalance").hasAnyRole("USER", "ADMIN")
-                       .requestMatchers("/myLoans").hasRole("USER")
-                       .requestMatchers("/myCards").hasRole("USER")*/
+                        .requestMatchers("/myAccount").authenticated()
+                         .requestMatchers("/myBalance").authenticated()
+                         .requestMatchers("/myLoans").authenticated()
+                         .requestMatchers("/myCards").authenticated()
                         .requestMatchers("/user").authenticated()
                         .requestMatchers("/notices", "/contact", "/error", "/registerUser", "/invalidSession").permitAll());
         http.formLogin(withDefaults());
