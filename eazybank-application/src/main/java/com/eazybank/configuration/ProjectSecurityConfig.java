@@ -3,6 +3,7 @@ package com.eazybank.configuration;
 import com.eazybank.exceptionhandling.CustomAccessDeniedHandler;
 import com.eazybank.exceptionhandling.CustomBasicAuthenticationEntryPoint;
 import com.eazybank.filters.CSRFCookieFilter;
+import com.eazybank.filters.RequestValidationBeforeFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,7 +49,11 @@ public class ProjectSecurityConfig {
                 .csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
                         .ignoringRequestMatchers( "/contact","/registerUser")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+
+                .addFilterBefore(new RequestValidationBeforeFilter(),BasicAuthenticationFilter.class)
+
                 .addFilterAfter(new CSRFCookieFilter(), BasicAuthenticationFilter.class)
+
                 .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure()) // Only HTTP
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/myAccount").authenticated()
