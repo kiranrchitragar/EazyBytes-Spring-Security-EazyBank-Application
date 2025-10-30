@@ -54,7 +54,7 @@ public class ProjectSecurityConfig {
 
                 .addFilterAfter(new CSRFCookieFilter(), BasicAuthenticationFilter.class)
 
-                //.addFilterAt(new CustomFilterUserDefined(), BasicAuthenticationFilter.class)
+                //.addFilterAt(new CustomFilterUserDefined(), BasicAuthenticationFilter.class) -- review
 
                 .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure()) // Only HTTP
                 .authorizeHttpRequests((requests) -> requests
