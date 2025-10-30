@@ -3,6 +3,8 @@ package com.eazybank.configuration;
 import com.eazybank.exceptionhandling.CustomAccessDeniedHandler;
 import com.eazybank.exceptionhandling.CustomBasicAuthenticationEntryPoint;
 import com.eazybank.filters.CSRFCookieFilter;
+import com.eazybank.filters.JWTTokenGeneratorFilter;
+import com.eazybank.filters.JWTTokenValidatorFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,8 +33,8 @@ public class ProjectSecurityProdConfig {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
-        http.securityContext(contextConfig -> contextConfig.requireExplicitSave(false))
-                .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+       // http.securityContext(contextConfig -> contextConfig.requireExplicitSave(false))
+                http.sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(corsConfig -> corsConfig.configurationSource(new CorsConfigurationSource() {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
@@ -49,6 +51,10 @@ public class ProjectSecurityProdConfig {
                         .ignoringRequestMatchers("/contact", "/register")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .addFilterAfter(new CSRFCookieFilter(), BasicAuthenticationFilter.class)
+                // JWT Token Generation and validation
+                .addFilterAfter(new JWTTokenGeneratorFilter(),BasicAuthenticationFilter.class)
+                .addFilterBefore(new JWTTokenValidatorFilter(),BasicAuthenticationFilter.class)
+
                 .requiresChannel(rcc -> rcc.anyRequest().requiresSecure()) // Only HTTPS
                 .authorizeHttpRequests((requests) -> requests
                 .requestMatchers("/myAccount").hasAuthority("VIEWACCOUNT")

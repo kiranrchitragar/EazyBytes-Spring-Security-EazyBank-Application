@@ -1,0 +1,25 @@
+In all previous sections we have used 2 opaque tokens 
+	1. JSESSIONID
+	2. CSRF Token
+these tokens are stored in cookie. 
+
+* IN opaque tokens - requires a call to auth server or any endpoint to validate and obtain user information. 
+* In JWT - This can be validated locally by verifying the token signature using public key, without needing a server call.
+
+* JWT has 3 parts , seperated by "."(period)
+	- Header - stores meta infomation related to token. {"alg":"HS256","typ":"JWT"} ===> Encode Base64 ===> eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+	- Payload - {"sub": "1234567890","name": "John Doe","admin": true,"iat": 1516239022} ===> Encode Base64 ===> eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0
+	- Signature(optional) - used to check if the token is tampered or no.  Hash value that is generated based on base64 encoded value of header, body & secret. Secret value in stored in backend just jused to   generate the signature. 
+	
+	
+Changes in Code
+1. pom - jjwt-api, jjwt-impl, jjwt-jackson
+2. ProjectSecurityConfig.java -> .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) - // Tell Spring security not to generate JSESSIOn ID, if its ALWAYS then generate JESSIONID
+3. // As we are sending token from Backend to UI in header , we need to add this
+                        config.setExposedHeaders(Arrays.asList("Authorization"));
+4. JWTTokenGeneratorFilter.java 
+5. JWTTokenValidatorFilter.java
+6. ProjectSecurityConfig.java 
+		// JWT Token Generation and validation
+                        .addFilterAfter(new JWTTokenGeneratorFilter(),BasicAuthenticationFilter.class)
+                        .addFilterBefore(new JWTTokenValidatorFilter(),BasicAuthenticationFilter.class)
